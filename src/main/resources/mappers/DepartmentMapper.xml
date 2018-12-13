@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 이 파일의 경로를 config.xml에 명시해야 한다. -->
+
+<!-- 이 XML의 구조대로 구현될 클래스의 이름 -->
+<mapper namespace="DepartmentMapper">
+
+	<!-- Beans 클래스의 객체이름(id)과 클래스이름(type)을 명시한다. -->
+	<resultMap id="department" type="study.spring.hellospring.model.Department">
+		<!-- Beans의 멤버변수(property)이름과 대상 테이블의 컬럼(column)을 연결한다. -->
+		<result property="deptno" column="deptno" />
+		<result property="dname" column="dname" />
+		<result property="loc" 	column="loc" />
+	</resultMap>
+	
+	<!-- 학과 목록 조회하기 -->
+	<select id="selectDepartmentList" parameterType="study.spring.hellospring.model.Department"
+	 resultMap="department">
+		SELECT deptno, dname, loc FROM department
+	</select>
+	
+	<!-- 학과 전체 데이터 수 얻기 -->
+	<select id="selectDepartmentCount"
+		parameterType="study.spring.hellospring.model.Department"
+		resultType="int">
+		SELECT count(deptno) 
+		FROM department		
+	</select>
+	
+	<!-- 학과 단일 조회 -->
+	<select id="selectDepartmentItem" parameterType="study.spring.hellospring.model.Department" resultMap="department">
+		SELECT deptno,dname,loc FROM department
+		WHERE deptno=#{deptno}
+	</select>
+	
+	<!-- 학과 추가 -->
+	<insert id="insertDepartmentItem" parameterType="study.spring.hellospring.model.Department"
+	useGeneratedKeys="true" keyProperty="deptno">
+		INSERT INTO department (deptno, dname, loc) VALUES (#{deptno}, #{dname}, #{loc});
+	</insert>
+	
+	<!-- 학과삭제 -->
+	<delete id="deleteDepartmentItem" parameterType="study.spring.hellospring.model.Department">
+		DELETE from department where deptno=#{deptno}
+	</delete>
+	
+	<!-- 학과 수정 -->
+	<update id="updateDepartmentItem" parameterType="study.spring.hellospring.model.Department">
+		<!-- "#{변수명}" 으로 표시된 곳에 파라미터로 전달된 Beans의 멤버변수값이 치환된다. -->
+		UPDATE department SET 
+			dname=#{dname}, loc=#{loc} 
+		WHERE deptno=#{deptno}
+	</update>
+</mapper>

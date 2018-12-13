@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<!-- 이 파일의 경로를 config.xml에 명시해야 한다. -->
+<mapper namespace="StudentMapper">
+	<!-- beans클래스의 객체이름과 클래스이름을 명시한다. -->
+	<resultMap id="student" type="study.spring.hellospring.model.Student">
+		<!-- beans의 멤버변수property 이름과 테이블 컬럼을 연결한다. -->
+		<result property="studno" column="studno"></result>
+		<result property="name" column="name"></result>
+		<result property="userid" column="userid"></result>
+		<result property="grade" column="grade"></result>
+		<result property="idnum" column="idnum"></result>
+		<result property="birthdate" column="birthdate"></result>
+		<result property="tel" column="tel"></result>
+		<result property="height" column="height"></result>
+		<result property="weight" column="height"></result>
+		<result property="deptno" column="deptno"></result>
+		<result property="profno" column="profno"></result>
+	</resultMap> 
+	
+	<!-- 다중행 조회 
+	id : 메서드 이름
+	parameterType=객체의 클래스 타입
+	resultMap = 리턴될 beans의 id
+	-->
+	<select id="selectStudentList"
+		parameterType="study.spring.hellospring.model.Student"
+		resultMap="student">
+		<!-- SQL -->
+		SELECT
+			studno,name,userid,grade,idnum,birthdate,tel,height,weight,deptno,profno
+		FROM student
+	</select>
+	
+	<!-- 
+		단일행 조회
+	 -->
+	 <select id="selectStudentItem"
+	 	parameterType="study.spring.hellospring.model.Student"
+	 	resultMap="student">
+	 	
+	 	<!-- SQL -->
+	 	SELECT 
+	 		studno,name,userid,grade,idnum,birthdate,tel,height,weight,deptno,profno
+		FROM student
+		WHERE studno=#{studno}
+	 </select>
+	 
+	 <!-- 데이터 저장
+	 	useGeneratedKeys
+	 	keyProperty = 자동증가 일련번호 컬럼명
+	  -->
+	  <insert id="insertStudentItem" parameterType="study.spring.hellospring.model.Student"
+	  	useGeneratedKeys="true" keyProperty="studno">
+	  	
+	  	INSERT INTO student(
+	  		name, userid, grade, idnum, birthdate, tel, height, weight, deptno, profno
+	  	) VALUES (
+	  		#{name}, #{userid}, #{grade}, #{idnum}, #{birthdate}, #{tel}, #{height}, #{weight}, #{deptno}, #{profno}
+	  	)
+	  </insert>
+	  
+	 <!-- 데이터 수정!
+	  -->
+	  <update id="updateStudentItem" parameterType="study.spring.hellospring.model.Student">
+	  	
+	  	UPDATE student SET
+	  		name=#{name}, userid=#{userid}, grade=#{grade}, idnum=#{idnum}, birthdate=#{birthdate},
+	  		tel=#{tel}, height=#{height}, weight=#{weight}, deptno=#{deptno}
+	  		<!-- profno=#{profno} -->
+	  	WHERE studno=#{studno}
+	  </update>	  
+	  
+	 <!-- 데이터 삭제 delete !
+	  -->
+	  <update id="deleteStudentItem" parameterType="study.spring.hellospring.model.Student">
+	  	
+	  	DELETE FROM student WHERE studno=#{studno}
+	  </update>		  
+</mapper>

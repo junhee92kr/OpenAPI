@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<!-- 이 파일의 경로를 config.xml에 명시해야 한다. -->
+<mapper namespace="StudentJoinMapper">
+	<!-- beans클래스의 객체이름과 클래스이름을 명시한다. -->
+	<resultMap id="student_department" type="study.spring.hellospring.model.StudentDepartment">
+		<result property="studno" column="studno" />
+		<result property="name" column="name" />
+		<result property="userid" column="userid" />
+		<result property="grade" column="grade" />
+		<result property="idnum" column="idnum" />
+		<result property="birthdate" column="birthdate" />
+		<result property="tel" column="tel" />
+		<result property="height" column="height" />
+		<result property="weight" column="weight" />
+		<result property="deptno" column="deptno" />
+		<result property="profno" column="profno" />
+		
+		<!-- dname추가 -->
+		<result property="dname" column="dname" />
+		
+		<result property="pname" column="pname" />
+	</resultMap>
+	
+	<!-- 교수 + 학과 테이블을 조인하여 목록 조회 -->
+	<select id="selectStudentJoinList"
+		parameterType="study.spring.hellospring.model.StudentDepartment"
+		resultMap="student_department">
+		<!-- SELECT studno, name, userid, grade, idnum, birthdate, tel, height, weight, 
+		student.deptno as deptno, profno, department.dname as dname
+		FROM student 
+		INNER JOIN department ON student.deptno=department.deptno -->
+		SELECT studno, s.name, s.userid, grade, idnum, birthdate, tel, height, weight, 
+		s.deptno, p.profno, d.dname as dname, p.name as pname
+		FROM student s
+		INNER JOIN department d ON s.deptno=d.deptno
+		LEFT OUTER JOIN professor p ON s.profno=p.profno
+		<!-- INNER JOIN professor p ON s.profno=p.profno -->
+		<!-- Dynamic SQL 기능. jsp -> service mapper순서로 beans객체가 전달됨 -->
+		<where>
+			<if test="name != null and name != ''">
+				s.name LIKE concat('%', #{name}, '%')
+			</if>
+		</where>
+		
+		ORDER BY studno DESC
+		LIMIT #{limitStart}, #{listCount}
+		<!-- LIMIT 절 + 내림차순 적용
+		PageHelper를 통해 계산한 값을 model 객체에 설정하고, 다시 mapper전달된다. -->
+
+	</select>
+	
+	<select id="selectStudentJoinItem"
+		parameterType="study.spring.hellospring.model.StudentDepartment"
+		resultMap="student_department">
+		SELECT studno, s.name, s.userid, grade, idnum, birthdate, tel, height, weight, 
+		s.deptno, s.profno, d.dname as dname, p.name as pname
+		FROM student s
+		INNER JOIN department d ON s.deptno=d.deptno
+		LEFT OUTER JOIN professor p ON s.profno=p.profno 
+		<!-- INNER JOIN professor p ON s.profno=p.profno -->
+		WHERE studno=#{studno}
+	</select>	
+	
+	<select id="selectStudentCount"
+		parameterType="study.spring.hellospring.model.StudentDepartment"
+		resultType="int">
+		<!-- count,max등의 집계함수는 리턴값이 숫자형태이므로,
+		resultMap 속성이 아닌 resultType 속성을 통해서 int형을 명시 -->
+		
+		SELECT count(studno)
+		FROM student s
+		INNER JOIN department d ON s.deptno=d.deptno
+		LEFT OUTER JOIN professor p ON s.profno=p.profno
+		<!-- INNER JOIN professor ON student.profno=professor.profno -->
+		<where>
+			<if test="name != null and name != ''">
+				s.name LIKE concat('%', #{name}, '%')
+			</if>
+		</where>
+	</select>  
+</mapper>
